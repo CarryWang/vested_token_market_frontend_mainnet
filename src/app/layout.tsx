@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
+import { Header } from "./header";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +19,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
+      </head>
+      <body className={inter.className}>
+        <Providers>
+          <Header />
+          <main className="h-full bg-gradient-to-r from-fuchsia-200 via-purple-200 to-pink-200">
+            {children}
+          </main>
+          <Toaster />
+        </Providers>
+      </body>
     </html>
   );
 }
