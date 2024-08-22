@@ -27,12 +27,12 @@ export function ConnectTips() {
             your wallet before start your journey
           </p>
           <Image
-            className="z-0"
+            className="w-[400px] h-auto"
             src="/scene-surfing-scallop.svg"
             alt="Sui"
             priority={true}
-            height={400}
-            width={400}
+            height={0}
+            width={0}
           />
         </CardContent>
         <CardFooter>

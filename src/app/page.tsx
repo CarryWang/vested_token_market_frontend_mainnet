@@ -27,12 +27,12 @@ export default function Home() {
       </div>
 
       <Image
-        className=" absolute right-0 z-0"
+        className=" absolute right-0 z-0 w-[400px] h-auto"
         src="/scene-surfing-scallop.svg"
         alt="Sui"
         priority={true}
-        height={400}
-        width={400}
+        height={0}
+        width={0}
       />
 
       <div className="mt-8">
