@@ -8,7 +8,7 @@ export default function Home() {
       <div className="text-8xl z-10">
         The Next Generation
         <div className="flex items-center">
-          <p className="text-9xl font-bold bg-gradient-to-r from-yellow-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <p className="animate-text text-9xl font-bold bg-gradient-to-r from-yellow-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
             veSCA Market
           </p>
           <div className="flex mt-6 ml-8">
