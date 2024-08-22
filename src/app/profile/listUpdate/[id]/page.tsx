@@ -114,7 +114,7 @@ export default function Page({
             title: "Congratulations, Successful Operation",
             description: "You have successfully updated the price.",
           });
-          router.push("/profile/listed");
+          router.push("/market");
         },
       }
     );
@@ -159,7 +159,7 @@ export default function Page({
                 />
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label className="text-lg text-slate-500" htmlFor="name">
-                    Starting price (SUI)
+                    Updating price (SUI)
                   </Label>
                   <Input
                     className="w-full"
