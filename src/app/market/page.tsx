@@ -83,8 +83,6 @@ export default function Page() {
 
     const { orderNftId, price } = obj;
 
-    console.log(obj);
-
     const tx = new Transaction();
 
     const [coin] = tx.splitCoins(tx.gas, [Number(price!) * 1.01]);

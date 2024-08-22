@@ -34,22 +34,19 @@ import {
   RESERVE_OBJECT,
   VE_TOKEN_TYPE,
 } from "@/utils/const";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Gem } from "lucide-react";
 
-export default function Page({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: any;
-}) {
-  console.log(searchParams, "=====");
+export default function Page({ params }: { params: { id: string } }) {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const nftId = searchParams.get("nftId");
+  const _price = searchParams.get("price");
 
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
     execute: async ({ bytes, signature }) =>
@@ -65,7 +62,7 @@ export default function Page({
       }),
   });
 
-  const calcPrice = String(searchParams.price / 10 ** 9);
+  const calcPrice = String(Number(_price) / 10 ** 9);
 
   const [price, setPrice] = useState<string>(calcPrice);
 
@@ -96,7 +93,7 @@ export default function Page({
       arguments: [
         tx.object(LIST_MARKET),
         tx.object(RESERVE_OBJECT),
-        tx.object(searchParams.nftId),
+        tx.object(nftId!),
         tx.pure.u64(finalPrice),
       ],
       typeArguments: [VE_TOKEN_TYPE],
@@ -145,7 +142,7 @@ export default function Page({
               <Gem size={24} />
               <span className="ml-1">veSCA</span>
             </CardTitle>
-            <CardDescription>{searchParams.id}</CardDescription>
+            <CardDescription>{id}</CardDescription>
           </CardHeader>
           <CardContent>
             <form>

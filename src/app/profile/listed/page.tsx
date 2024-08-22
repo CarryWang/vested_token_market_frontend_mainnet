@@ -125,8 +125,6 @@ export default function Page() {
     );
   }
 
-  console.log(listedList, "=====");
-
   return isLoading ? (
     <div>
       <div className="text-lg mb-6">
