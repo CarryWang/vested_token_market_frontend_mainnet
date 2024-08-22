@@ -1,11 +1,28 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Roboto_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Header } from "./header";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const roboto_mono = Roboto_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto-mono",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,7 +39,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
       </head>
-      <body className={inter.className}>
+      <body
+        className={`${inter.variable} ${roboto_mono.variable} ${poppins.variable} font-poppins`}
+      >
         <Providers>
           <Header />
           <main className="h-full bg-gradient-to-r from-fuchsia-200 via-purple-200 to-pink-200">

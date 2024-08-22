@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className=" container flex flex-col items-start justify-center h-full">
-      <div className="text-8xl font-mono z-10">
+      <div className="text-8xl z-10">
         The Next Generation
         <div className="flex items-center">
           <p className="text-9xl font-bold bg-gradient-to-r from-yellow-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
