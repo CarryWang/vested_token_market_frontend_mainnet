@@ -8,7 +8,7 @@ This is an application built on sui blockchain.
 
 The project is currently deployed at sui's test network.
 
-Try our [**DEMO**](https://github.com/web3CL/VeSCAMarket/)
+Try our [**DEMO**](https://vesca-market.vercel.app/)
 
 ### Cheack contract
 
