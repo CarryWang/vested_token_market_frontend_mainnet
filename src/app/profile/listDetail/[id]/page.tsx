@@ -29,7 +29,7 @@ import {
 } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { LIST_MARKET, PACKAGE_OBJECT_ID, VE_TOKEN_TYPE } from "@/utils/const";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Gem } from "lucide-react";
 
@@ -38,6 +38,12 @@ export default function Page({ params }: { params: { id: string } }) {
   const client = useSuiClient();
   const router = useRouter();
   const { toast } = useToast();
+
+  const searchParams = useSearchParams();
+  const vesca_id = searchParams.get("vesca_id");
+  const current_vesca = searchParams.get("current_vesca");
+  const locked_sca = searchParams.get("locked_sca");
+  const remaining_lock_period = searchParams.get("remaining_lock_period");
 
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
     execute: async ({ bytes, signature }) =>
@@ -137,7 +143,31 @@ export default function Page({ params }: { params: { id: string } }) {
               <Gem size={24} />
               <span className="ml-1">veSCA</span>
             </CardTitle>
-            <CardDescription>{params.id}</CardDescription>
+            <div className="space-y-3">
+              <div className="truncate" title={vesca_id!}>
+                {vesca_id}
+              </div>
+              <div>
+                <h1 className="text-xs text-fuchsia-900">CURRENT VESCA:</h1>
+                <p className="text-lg font-semibold text-fuchsia-900">
+                  {current_vesca}
+                </p>
+              </div>
+              <div>
+                <h1 className="text-xs text-fuchsia-900">LOCKED SCA:</h1>
+                <p className="text-lg font-semibold text-fuchsia-900">
+                  {locked_sca}
+                </p>
+              </div>
+              <div>
+                <h1 className="text-xs text-fuchsia-900">
+                  REMAINING LOCK PERIOD:
+                </h1>
+                <p className="text-lg font-semibold text-fuchsia-900">
+                  {remaining_lock_period}
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <form>

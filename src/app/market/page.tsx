@@ -33,7 +33,8 @@ import { SkeletonComponent } from "../skeleton";
 import { ConnectTips } from "../connectTips";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { Gem } from "lucide-react";
+import { Gem, ShoppingBasket } from "lucide-react";
+import { calculateVeSCA, unixToHumanReadable } from "@/lib/utils";
 
 interface MarketListProps {
   price?: string;
@@ -45,7 +46,7 @@ export default function Page() {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const router = useRouter();
-  const [marketList, setMarketList] = useState<MarketListProps[]>([]);
+  const [marketList, setMarketList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
@@ -66,12 +67,55 @@ export default function Page() {
     (async () => {
       setIsLoading(true);
       const res = await getMarketList();
-      setMarketList(res!);
+
+      const renderList = [];
+
+      if (res?.length) {
+        for (const item of res) {
+          const result = await client.getDynamicFieldObject({
+            parentId:
+              "0x0a0b7f749baeb61e3dfee2b42245e32d0e6b484063f0a536b33e771d573d7246",
+            name: {
+              type: "0x2::object::ID",
+              value: item.veTokenId,
+            },
+          });
+
+          //======================================================================================
+
+          const unlock_at = Number(
+            get(result, "data.content.fields.value.fields.unlock_at")
+          );
+          const locked_sca_amount = Number(
+            get(result, "data.content.fields.value.fields.locked_sca_amount")
+          );
+          // the decimal of SCA is 9
+          const decimal = 9;
+          let locked_sca = locked_sca_amount / Math.pow(10, decimal);
+
+          const current_vesca = calculateVeSCA(locked_sca, unlock_at);
+
+          const remaining_lock_period = unixToHumanReadable(unlock_at);
+
+          //======================================================================================
+
+          const obj = {
+            ...item,
+            current_vesca,
+            locked_sca,
+            remaining_lock_period,
+          };
+
+          renderList.push(obj);
+        }
+      }
+
+      setMarketList(renderList);
       setIsLoading(false);
     })();
   }, []);
 
-  async function handleBuyIt(obj: MarketListProps) {
+  async function handleBuyIt(obj: any) {
     if (!account) {
       toast({
         variant: "destructive",
@@ -133,7 +177,11 @@ export default function Page() {
     <div className="pt-40 container mx-auto">
       <div className="flex flex-row flex-wrap gap-4">
         {!marketList.length ? (
-          <div>There is nothing available at the moment</div>
+          <div className="text-6xl text-slate-500 drop-shadow-md">
+            <ShoppingBasket size={140} />
+            There is no order on the market
+            <div>at present</div>
+          </div>
         ) : (
           marketList.map((item) => (
             <Card key={item.orderNftId} className="max-w-[320px]">
@@ -142,12 +190,31 @@ export default function Page() {
                   <Gem size={24} />
                   <span className="ml-1">veSCA</span>
                 </CardTitle>
-                <CardDescription className="truncate">
-                  {item.veTokenId}
-                </CardDescription>
-                {/* <CardDescription className="truncate">
-                  NFT id: {item.orderNftId}
-                </CardDescription> */}
+                <div className="space-y-3">
+                  <div className="truncate" title={item.veTokenId}>
+                    {item.veTokenId}
+                  </div>
+                  <div>
+                    <h1 className="text-xs text-fuchsia-900">CURRENT VESCA:</h1>
+                    <p className="text-lg font-semibold text-fuchsia-900">
+                      {item.current_vesca}
+                    </p>
+                  </div>
+                  <div>
+                    <h1 className="text-xs text-fuchsia-900">LOCKED SCA:</h1>
+                    <p className="text-lg font-semibold text-fuchsia-900">
+                      {item.locked_sca}
+                    </p>
+                  </div>
+                  <div>
+                    <h1 className="text-xs text-fuchsia-900">
+                      REMAINING LOCK PERIOD:
+                    </h1>
+                    <p className="text-lg font-semibold text-fuchsia-900">
+                      {item.remaining_lock_period}
+                    </p>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="flex items-center">
                 <Image

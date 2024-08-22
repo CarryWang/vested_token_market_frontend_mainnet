@@ -36,6 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { Gem } from "lucide-react";
+import { calculateVeSCA, unixToHumanReadable } from "@/lib/utils";
 
 export default function Page() {
   const account = useCurrentAccount();
@@ -79,7 +80,51 @@ export default function Page() {
         nftIdSet?.includes(item.orderNftId)
       );
 
-      setListedList(_listedList);
+      console.log(_listedList, "++++++++++++==");
+
+      const renderList = [];
+
+      if (_listedList?.length) {
+        for (const item of _listedList) {
+          const result = await client.getDynamicFieldObject({
+            parentId:
+              "0x0a0b7f749baeb61e3dfee2b42245e32d0e6b484063f0a536b33e771d573d7246",
+            name: {
+              type: "0x2::object::ID",
+              value: item.veTokenId,
+            },
+          });
+
+          //======================================================================================
+
+          const unlock_at = Number(
+            get(result, "data.content.fields.value.fields.unlock_at")
+          );
+          const locked_sca_amount = Number(
+            get(result, "data.content.fields.value.fields.locked_sca_amount")
+          );
+          // the decimal of SCA is 9
+          const decimal = 9;
+          let locked_sca = locked_sca_amount / Math.pow(10, decimal);
+
+          const current_vesca = calculateVeSCA(locked_sca, unlock_at);
+
+          const remaining_lock_period = unixToHumanReadable(unlock_at);
+
+          //======================================================================================
+
+          const obj = {
+            ...item,
+            current_vesca,
+            locked_sca,
+            remaining_lock_period,
+          };
+
+          renderList.push(obj);
+        }
+      }
+
+      setListedList(renderList);
       setIsLoading(false);
     })();
   }, [nftObjs]);
@@ -147,12 +192,31 @@ export default function Page() {
                 <Gem size={24} />
                 <span className="ml-1">veSCA</span>
               </CardTitle>
-              <CardDescription className="truncate">
-                {item.veTokenId}
-              </CardDescription>
-              {/* <CardDescription className="truncate">
-                NFT id: {item.orderNftId}
-              </CardDescription> */}
+              <div className="space-y-3">
+                <div className="truncate" title={item.veTokenId}>
+                  {item.veTokenId}
+                </div>
+                <div>
+                  <h1 className="text-xs text-fuchsia-900">CURRENT VESCA:</h1>
+                  <p className="text-lg font-semibold text-fuchsia-900">
+                    {item.current_vesca}
+                  </p>
+                </div>
+                <div>
+                  <h1 className="text-xs text-fuchsia-900">LOCKED SCA:</h1>
+                  <p className="text-lg font-semibold text-fuchsia-900">
+                    {item.locked_sca}
+                  </p>
+                </div>
+                <div>
+                  <h1 className="text-xs text-fuchsia-900">
+                    REMAINING LOCK PERIOD:
+                  </h1>
+                  <p className="text-lg font-semibold text-fuchsia-900">
+                    {item.remaining_lock_period}
+                  </p>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="flex items-center">
               <Image
@@ -174,11 +238,7 @@ export default function Page() {
               <Link
                 href={{
                   pathname: `/profile/listUpdate/${item.veTokenId}`,
-                  query: {
-                    id: item.veTokenId,
-                    nftId: item.orderNftId,
-                    price: item.price,
-                  },
+                  query: item,
                 }}
               >
                 <Button className="bg-gradient-to-r from-fuchsia-500 via-purple-500 to-pink-500 text-white hover:opacity-80">

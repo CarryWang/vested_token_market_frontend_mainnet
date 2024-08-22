@@ -27,11 +27,13 @@ export function Header() {
               height={64}
               width={64}
             />
-            <h1 className=" text-xl ml-2 font-semibold">veSCA Market</h1>
+            <h1 className="text-xl ml-2 font-semibold drop-shadow-md">
+              Vested Token Market
+            </h1>
           </div>
         </Link>
 
-        <nav className="space-x-8 font-bold flex">
+        <nav className="space-x-8 font-bold flex drop-shadow-md">
           <Link
             href="/market"
             className={`${cn(

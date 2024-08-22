@@ -44,9 +44,19 @@ export default function Page({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-  const nftId = searchParams.get("nftId");
+  const veTokenId = searchParams.get("veTokenId");
+  const orderNftId = searchParams.get("orderNftId");
   const _price = searchParams.get("price");
+  const current_vesca = searchParams.get("current_vesca");
+  const locked_sca = searchParams.get("locked_sca");
+  const remaining_lock_period = searchParams.get("remaining_lock_period");
+
+  // current_vesca: number;
+  //   locked_sca: number;
+  //   remaining_lock_period: string;
+  //   orderNftId: any;
+  //   price: any;
+  //   veTokenId: any;
 
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
     execute: async ({ bytes, signature }) =>
@@ -93,7 +103,7 @@ export default function Page({ params }: { params: { id: string } }) {
       arguments: [
         tx.object(LIST_MARKET),
         tx.object(RESERVE_OBJECT),
-        tx.object(nftId!),
+        tx.object(orderNftId!),
         tx.pure.u64(finalPrice),
       ],
       typeArguments: [VE_TOKEN_TYPE],
@@ -142,7 +152,31 @@ export default function Page({ params }: { params: { id: string } }) {
               <Gem size={24} />
               <span className="ml-1">veSCA</span>
             </CardTitle>
-            <CardDescription>{id}</CardDescription>
+            <div className="space-y-3">
+              <div className="truncate" title={veTokenId!}>
+                {veTokenId}
+              </div>
+              <div>
+                <h1 className="text-xs text-fuchsia-900">CURRENT VESCA:</h1>
+                <p className="text-lg font-semibold text-fuchsia-900">
+                  {current_vesca}
+                </p>
+              </div>
+              <div>
+                <h1 className="text-xs text-fuchsia-900">LOCKED SCA:</h1>
+                <p className="text-lg font-semibold text-fuchsia-900">
+                  {locked_sca}
+                </p>
+              </div>
+              <div>
+                <h1 className="text-xs text-fuchsia-900">
+                  REMAINING LOCK PERIOD:
+                </h1>
+                <p className="text-lg font-semibold text-fuchsia-900">
+                  {remaining_lock_period}
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <form>
