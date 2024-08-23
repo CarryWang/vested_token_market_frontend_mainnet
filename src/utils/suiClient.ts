@@ -108,8 +108,6 @@ export const getVeSCAInfoList = async (list: any) => {
         remaining_lock_period,
       };
 
-      console.log(obj, "===");
-
       renderList.push(obj);
     }
   }
