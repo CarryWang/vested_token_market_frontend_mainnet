@@ -122,7 +122,7 @@ export default function Page() {
           }, 1000);
         },
         onError: (err) => {
-          console.log(err, "err========");
+          console.error(err);
         },
       }
     );
