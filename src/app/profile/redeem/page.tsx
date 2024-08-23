@@ -136,7 +136,11 @@ export default function Page() {
             description:
               "You have successfully withdrawn your tokens, view them in your wallet.",
           });
-          router.push("/profile");
+
+          //延迟跳转
+          setTimeout(() => {
+            router.push("/profile");
+          }, 1000);
         },
       }
     );

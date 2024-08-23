@@ -1,6 +1,7 @@
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { PRICES_TABLE, targetNetwork, VESTED_TOKENS_TABLE } from "./const";
 import { get } from "lodash";
+import { calculateVeSCA, unixToHumanReadable } from "@/lib/utils";
 
 export const client = new SuiClient({ url: getFullnodeUrl(targetNetwork) });
 
@@ -64,4 +65,54 @@ export const getMarketList = async () => {
   }
 
   return result;
+};
+
+export const getVeSCAInfoList = async (list: any) => {
+  const renderList = [];
+
+  if (list?.length) {
+    for (const item of list) {
+      const result = await client.getDynamicFieldObject({
+        parentId:
+          "0x0a0b7f749baeb61e3dfee2b42245e32d0e6b484063f0a536b33e771d573d7246",
+        name: {
+          type: "0x2::object::ID",
+          value: item.veTokenId,
+        },
+      });
+
+      //======================================================================================
+
+      const unlock_at = Number(
+        get(result, "data.content.fields.value.fields.unlock_at")
+      );
+      const locked_sca_amount = Number(
+        get(result, "data.content.fields.value.fields.locked_sca_amount")
+      );
+      // the decimal of SCA is 9
+      const decimal = 9;
+      const _locked_sca = locked_sca_amount / Math.pow(10, decimal);
+
+      const locked_sca = _locked_sca.toFixed(2);
+
+      const current_vesca = calculateVeSCA(_locked_sca, unlock_at);
+
+      const remaining_lock_period = unixToHumanReadable(unlock_at);
+
+      //======================================================================================
+
+      const obj = {
+        ...item,
+        current_vesca,
+        locked_sca,
+        remaining_lock_period,
+      };
+
+      console.log(obj, "===");
+
+      renderList.push(obj);
+    }
+  }
+
+  return renderList;
 };

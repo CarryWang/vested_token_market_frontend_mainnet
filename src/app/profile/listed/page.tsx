@@ -8,7 +8,7 @@ import {
   useSuiClientQuery,
 } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { getMarketList } from "@/utils/suiClient";
+import { getMarketList, getVeSCAInfoList } from "@/utils/suiClient";
 import {
   LIST_MARKET,
   NFT_TYPE,
@@ -80,49 +80,7 @@ export default function Page() {
         nftIdSet?.includes(item.orderNftId)
       );
 
-      console.log(_listedList, "++++++++++++==");
-
-      const renderList = [];
-
-      if (_listedList?.length) {
-        for (const item of _listedList) {
-          const result = await client.getDynamicFieldObject({
-            parentId:
-              "0x0a0b7f749baeb61e3dfee2b42245e32d0e6b484063f0a536b33e771d573d7246",
-            name: {
-              type: "0x2::object::ID",
-              value: item.veTokenId,
-            },
-          });
-
-          //======================================================================================
-
-          const unlock_at = Number(
-            get(result, "data.content.fields.value.fields.unlock_at")
-          );
-          const locked_sca_amount = Number(
-            get(result, "data.content.fields.value.fields.locked_sca_amount")
-          );
-          // the decimal of SCA is 9
-          const decimal = 9;
-          let locked_sca = locked_sca_amount / Math.pow(10, decimal);
-
-          const current_vesca = calculateVeSCA(locked_sca, unlock_at);
-
-          const remaining_lock_period = unixToHumanReadable(unlock_at);
-
-          //======================================================================================
-
-          const obj = {
-            ...item,
-            current_vesca,
-            locked_sca,
-            remaining_lock_period,
-          };
-
-          renderList.push(obj);
-        }
-      }
+      const renderList = await getVeSCAInfoList(res);
 
       setListedList(renderList);
       setIsLoading(false);
@@ -164,7 +122,11 @@ export default function Page() {
             title: "Congratulations, Successful Operation",
             description: "You have successfully unlisted the veSCA.",
           });
-          router.push("/profile");
+
+          //延迟跳转
+          setTimeout(() => {
+            router.push("/profile");
+          }, 1000);
         },
       }
     );

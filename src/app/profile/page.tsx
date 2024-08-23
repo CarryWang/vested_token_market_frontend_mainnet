@@ -22,6 +22,7 @@ import { VE_TOKEN_TYPE } from "@/utils/const";
 import { Gem } from "lucide-react";
 import { useEffect, useState } from "react";
 import { calculateVeSCA, unixToHumanReadable } from "@/lib/utils";
+import { getVeSCAInfoList } from "@/utils/suiClient";
 
 export default function Page() {
   const account = useCurrentAccount();
@@ -45,54 +46,18 @@ export default function Page() {
   });
 
   const vescaObjIds = vescaObjs?.data.map((item) => {
-    return get(item, "data.objectId");
+    return {
+      veTokenId: get(item, "data.objectId"),
+    };
   });
 
   useEffect(() => {
     setIsLoading(true);
-    const _vescaList = [];
 
     (async () => {
-      if (vescaObjIds?.length) {
-        for (const item of vescaObjIds!) {
-          const result = await client.getDynamicFieldObject({
-            parentId:
-              "0x0a0b7f749baeb61e3dfee2b42245e32d0e6b484063f0a536b33e771d573d7246",
-            name: {
-              type: "0x2::object::ID",
-              value: item,
-            },
-          });
+      const renderList = await getVeSCAInfoList(vescaObjIds);
 
-          //======================================================================================
-
-          const unlock_at = Number(
-            get(result, "data.content.fields.value.fields.unlock_at")
-          );
-          const locked_sca_amount = Number(
-            get(result, "data.content.fields.value.fields.locked_sca_amount")
-          );
-          // the decimal of SCA is 9
-          const decimal = 9;
-          let locked_sca = locked_sca_amount / Math.pow(10, decimal);
-
-          const current_vesca = calculateVeSCA(locked_sca, unlock_at);
-
-          const remaining_lock_period = unixToHumanReadable(unlock_at);
-
-          //======================================================================================
-
-          const obj = {
-            vesca_id: item,
-            current_vesca,
-            locked_sca,
-            remaining_lock_period,
-          };
-
-          _vescaList.push(obj);
-        }
-      }
-      setVescaList(_vescaList);
+      setVescaList(renderList);
       setIsLoading(false);
     })();
   }, [vescaObjs]);
@@ -107,21 +72,21 @@ export default function Page() {
   ) : (
     <div className="">
       <h1 className="text-base mb-6 text-slate-500 font-bold">
-        <span className="text-pink-800 text-xl mr-2">{`${vescaObjs?.data.length}`}</span>
+        <span className="text-pink-800 text-xl mr-2">{`${vescaList.length}`}</span>
         items
       </h1>
 
       <div className="flex flex-row flex-wrap gap-4">
         {vescaList.map((obj) => (
-          <Card key={obj.vesca_id} className="max-w-[320px]">
+          <Card key={obj.veTokenId} className="max-w-[320px]">
             <CardHeader>
               <CardTitle className="flex items-center text-fuchsia-900">
                 <Gem size={24} />
                 <span className="ml-1">veSCA</span>
               </CardTitle>
               <div className="space-y-3">
-                <div className="truncate" title={obj.vesca_id}>
-                  {obj.vesca_id}
+                <div className="truncate" title={obj.veTokenId}>
+                  {obj.veTokenId}
                 </div>
                 <div>
                   <h1 className="text-xs text-fuchsia-900">CURRENT VESCA:</h1>
@@ -165,7 +130,7 @@ export default function Page() {
             <CardFooter>
               <Link
                 href={{
-                  pathname: `/profile/listDetail/${obj.vesca_id}`,
+                  pathname: `/profile/listDetail/${obj.veTokenId}`,
                   query: obj,
                 }}
               >

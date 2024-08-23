@@ -40,7 +40,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const { toast } = useToast();
 
   const searchParams = useSearchParams();
-  const vesca_id = searchParams.get("vesca_id");
+  const veTokenId = searchParams.get("veTokenId");
   const current_vesca = searchParams.get("current_vesca");
   const locked_sca = searchParams.get("locked_sca");
   const remaining_lock_period = searchParams.get("remaining_lock_period");
@@ -112,7 +112,11 @@ export default function Page({ params }: { params: { id: string } }) {
             description:
               "your veSCA is listed, you can check it out in the marketplace.",
           });
-          router.push("/market");
+
+          //延迟跳转
+          setTimeout(() => {
+            router.push("/market");
+          }, 1000);
         },
       }
     );
@@ -144,8 +148,8 @@ export default function Page({ params }: { params: { id: string } }) {
               <span className="ml-1">veSCA</span>
             </CardTitle>
             <div className="space-y-3">
-              <div className="truncate" title={vesca_id!}>
-                {vesca_id}
+              <div className="truncate" title={veTokenId!}>
+                {veTokenId}
               </div>
               <div>
                 <h1 className="text-xs text-fuchsia-900">CURRENT VESCA:</h1>
