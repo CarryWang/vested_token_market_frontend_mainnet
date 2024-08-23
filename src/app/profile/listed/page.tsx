@@ -80,7 +80,7 @@ export default function Page() {
         nftIdSet?.includes(item.orderNftId)
       );
 
-      const renderList = await getVeSCAInfoList(res);
+      const renderList = await getVeSCAInfoList(_listedList);
 
       setListedList(renderList);
       setIsLoading(false);
